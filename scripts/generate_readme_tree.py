@@ -40,6 +40,11 @@ def note_title(path: Path) -> str:
     return path.stem
 
 
+def folder_title(name: str) -> str:
+    """Turn a directory name into a display title, e.g. 'ai_usage' -> 'Ai Usage'."""
+    return name.replace("_", " ").replace("-", " ").title()
+
+
 def link(path: Path) -> str:
     """A Markdown link to a note, relative to the repo root, URL-encoded."""
     rel = path.relative_to(REPO_ROOT).as_posix()
@@ -48,7 +53,11 @@ def link(path: Path) -> str:
 
 
 def render(directory: Path, depth: int) -> list[str]:
-    """Render `directory`'s notes and subdirectories as indented list items."""
+    """Render `directory`'s subdirectories and notes as indented list items.
+
+    Files at the repository root (depth 0) are intentionally skipped: only the
+    contents of subfolders are listed.
+    """
     lines: list[str] = []
     entries = sorted(
         directory.iterdir(), key=lambda p: (p.is_file(), p.name.lower())
@@ -60,9 +69,9 @@ def render(directory: Path, depth: int) -> list[str]:
             child_lines = render(entry, depth + 1)
             if not child_lines:
                 continue
-            lines.append(f"{INDENT * depth}- **{entry.name}/**")
+            lines.append(f"{INDENT * depth}- **{folder_title(entry.name)}**")
             lines.extend(child_lines)
-        elif entry.suffix == ".md" and entry != README:
+        elif depth > 0 and entry.suffix == ".md":
             lines.append(f"{INDENT * depth}- {link(entry)}")
     return lines
 

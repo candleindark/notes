@@ -18,7 +18,9 @@ python3 scripts/generate_readme_tree.py
 
 `scripts/generate_readme_tree.py` walks the repo, renders each `.md` note as `[<title>](<path>)` grouped by folder, and rewrites the marked region. Key behaviors to keep in mind when writing notes or changing the script:
 
+- Only the contents of **subfolders** are indexed; Markdown files at the repo root (e.g. `README.md`, `CLAUDE.md`) are intentionally not listed.
 - A note's displayed title is its **first level-1 heading** (`# ...`); if a file has none, the title falls back to the file stem. Start each note with an `# H1` to control how it appears in the index.
+- A folder's heading is its name title-cased with separators turned into spaces (`ai_usage` -> `Ai Usage`); see `folder_title`.
 - These directories are skipped entirely: `.git`, `.idea`, `scripts`, `.github` (see `EXCLUDED_DIRS`).
 - The script exits non-zero if the markers are missing from `README.md`.
 
